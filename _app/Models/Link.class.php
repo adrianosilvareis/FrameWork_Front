@@ -8,16 +8,17 @@
  */
 class Link {
 
-    private $Local;
     private $File;
     private $Link;
+
+    /** DATA */
+    private $Local;
     private $Patch;
-
-    /** @var SEO */
     private $Tags;
+    private $Data;
 
     /** @var SEO */
-    private $Data;
+    private $Seo;
 
     function __construct() {
         $this->Local = strip_tags(trim(filter_input(INPUT_GET, 'url', FILTER_DEFAULT)));
@@ -25,17 +26,16 @@ class Link {
         $this->Local = explode('/', $this->Local);
         $this->File = (isset($this->Local[0]) ? $this->Local[0] : 'index');
         $this->Link = (isset($this->Local[1]) ? $this->Local[1] : null);
+        $this->Seo = new Seo($this->File, $this->Link);
     }
 
     public function getTags() {
-        $this->Tags = new Seo($this->File, $this->Link);
-        $this->Tags = $this->Tags->getTags();
+        $this->Tags = $this->Seo->getTags();
         echo $this->Tags;
     }
 
     public function getData() {
-        $this->Data = new Seo($this->File, $this->Link);
-        $this->Data = $this->Data->getData();
+        $this->Data = $this->Seo->getData();
         return $this->Data;
     }
 
@@ -51,12 +51,12 @@ class Link {
     //privates
 
     private function setPatch() {
-        if (file_exists(REQUIRE_PATH . '\\' . $this->File . '.php')):
-            $this->Patch = REQUIRE_PATH . '\\' . $this->File . '.php';
-        elseif (file_exists(REQUIRE_PATH . '\\' . $this->File . '\\' . $this->Link . '.php')):
-            $this->Patch = REQUIRE_PATH . '\\' . $this->File . '\\' . $this->Link . '.php';
+        if (file_exists(REQUIRE_PATH . DIRECTORY_SEPARATOR . $this->File . '.php')):
+            $this->Patch = REQUIRE_PATH . DIRECTORY_SEPARATOR . $this->File . '.php';
+        elseif (file_exists(REQUIRE_PATH . DIRECTORY_SEPARATOR . $this->File . DIRECTORY_SEPARATOR . $this->Link . '.php')):
+            $this->Patch = REQUIRE_PATH . DIRECTORY_SEPARATOR . $this->File . DIRECTORY_SEPARATOR . $this->Link . '.php';
         else:
-            $this->Patch = REQUIRE_PATH . '\\404.php';
+            $this->Patch = REQUIRE_PATH . DIRECTORY_SEPARATOR . '404.php';
         endif;
     }
 

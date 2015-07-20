@@ -19,7 +19,7 @@ class View {
      * @param STRING $Template = Caminho / Nome_do_arquivo
      */
     public function Load($Template) {
-        $this->Template = INCLUDE_PATH . DIRECTORY_SEPARATOR . '_tpl' . DIRECTORY_SEPARATOR . (string) $Template;
+        $this->Template = REQUIRE_PATH . DIRECTORY_SEPARATOR . '_tpl' . DIRECTORY_SEPARATOR . (string) $Template;
         $this->Template = file_get_contents($this->Template . '.tpl.html');
         return $this->Template;
     }

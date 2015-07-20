@@ -13,8 +13,9 @@ function __autoload($Class_name) {
     $iDir = null;
 
     foreach ($cDir as $dirName):
-        if (!$iDir && file_exists(__DIR__ . "\\{$dirName}\\{$Class_name}.class.php") && !is_dir(__DIR__ . "\\{$dirName}\\{$Class_name}.class.php")):
-            require_once(__DIR__ . "\\{$dirName}\\{$Class_name}.class.php");
+        $file = __DIR__ . DIRECTORY_SEPARATOR . $dirName . DIRECTORY_SEPARATOR . $Class_name . ".class.php";
+        if (!$iDir && file_exists($file) && !is_dir($file)):
+            require_once($file);
             $iDir = true;
         endif;
     endforeach;
@@ -36,10 +37,10 @@ define('SITENAME', 'Cidade Online');
 define('SITEDESC', 'Este site foi desenvolvido por Adriano Reis em treinamento por Robson v. Leite UPINSIDE ');
 
 //DEFINE A HOME DO SITE #########################
-define('HOME', 'http://localhost:1989/FrameWork_Front');
+define('HOME', 'http://localhost/FrameWork_Front');
 define('THEME', 'cidadeonline');
-define('INCLUDE_PATH', HOME . '/themes/' . THEME);
-define('REQUIRE_PATH', 'themes\\' . THEME);
+define('INCLUDE_PATH', HOME . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . THEME);
+define('REQUIRE_PATH', 'themes' . DIRECTORY_SEPARATOR . THEME);
 
 //TRATAMENTO DE ERROS #####################
 //CSS Constantes :: Mensagens de Erro

@@ -95,8 +95,8 @@ class Check {
         if ($query):
             return (int) $query[0]->category_id;
         else:
-            echo "A categoria {$CategoryName} não foi encontrada!";
-            die;
+            WSErro("A categoria <b>{$CategoryName}</b> não foi encontrada!", WS_ERROR);
+            return null;
         endif;
     }
 

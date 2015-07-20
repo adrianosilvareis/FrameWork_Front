@@ -1,3 +1,10 @@
+<?php
+if ($Link->getData()):
+    extract($Link->getData());
+else:
+    header('Location: ' . HOME . DIRECTORY_SEPARATOR . '404');
+endif;
+?>
 <!--HOME CONTENT-->
 <div class="site-container">
 
@@ -9,71 +16,54 @@
             <!--CABEÇALHO GERAL-->
             <header>
                 <hgroup>
-                    <h1>Este é o titulo do meu artigo na Cidade Online</h1>
+                    <h1><?= $post_title; ?></h1>
                     <div class="img capa">
-                        <!--w = 578px  [ CRIAR THUMB ]-->
-                        <img src="<?= INCLUDE_PATH ?>/_tmp/13.jpg" width="578" alt="" title="">
+                        <?= Check::Image('uploads' . DIRECTORY_SEPARATOR . $post_cover, $post_title, 578) ?>
                     </div>
-                    <time datetime="2013-11-12" pubdate>Enviada em: <?= date('d/m/Y H:i'); ?>Hs</time>
+                    <time datetime="<?= date('Y-m-d', strtotime($post_date)); ?>" pubdate>Enviada em: <?= date('d/m/Y H:i', strtotime($post_date)); ?>Hs</time>
                 </hgroup>
             </header>
 
 
             <!--CONTEUDO-->
             <div class="htmlchars">
-                <h2>Lorem Ipsum é simplesmente uma simulação de texto da indústria tipográfica e de impressos</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet, sapien eu bibendum pellentesque, mi neque sodales mi, in tristique sapien enim sit amet massa. In vulputate sollicitudin velit nec lobortis</p>
-                <p>Fusce ullamcorper, nulla nec viverra pharetra, velit mauris volutpat magna, sed dapibus leo ipsum at lorem.</p>
-
-                <h3>Índice de artigo:</h3>
-
-                <img src="<?= INCLUDE_PATH ?>/_tmp/13.jpg" width="1024" height="724" alt="" title="">
-                <pre>Sed laoreet, sapien eu bibendum pellentesque, mi neque sodales mi, in tristique sapien enim sit amet massa</pre>
-
-                <p>Fusce ullamcorper, nulla nec viverra pharetra, velit mauris volutpat magna, sed dapibus leo ipsum at lorem. Sed tincidunt elementum ipsum ut mollis</p>
-                <h4>Avelit mauris volutpat magna, sed dapibus leo ipsum at lorem.</h4>
-                <p>Lorem ipsum dolor sit amet, <a href="#">consectetur adipiscing elit</a>. Sed laoreet, sapien eu bibendum pellentesque, mi neque sodales mi, in tristique sapien enim sit amet massa. In vulputate sollicitudin velit nec lobortis</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed laoreet, sapien eu bibendum pellentesque, mi neque sodales mi, in tristique sapien enim sit amet massa. In vulputate sollicitudin velit nec lobortis. Sed ullamcorper elit quis lacinia elementum. Nulla facilisi.</p>
-
-                <h3>Veja o vídeo:</h3>
-                <iframe width="960" height="720" src="//www.youtube.com/embed/gcs5PRxEXq4" frameborder="0" allowfullscreen></iframe>
-
-                <blockquote>velit mauris volutpat magna, sed dapibus leo ipsum at lorem, sapien eu bibendum pellentesque, mi neque sodales mi, in tristique</blockquote>
-                <p>Morbi eget arcu sed erat feugiat ullamcorper. Fusce id purus vitae enim euismod suscipit. Morbi et lorem blandit, dapibus lacus nec, adipiscing ipsum!</p>
-
+                <?= $post_content; ?>
                 <!--GALERIA-->
-                <section class="gallery">
-                    <hgroup>
-                        <h3>
-                            GALERIA:
-                            <p class="tagline">Veja fotos em <mark>Este é o titulo do meu artigo na Cidade Online</mark></p>
-                        </h3>
-                    </hgroup>
+                <?php
+                $ReadGb = new WsPostsGallery;
+                $ReadGb->setPost_id($post_id);
+                $ReadGb->Query("WHERE #post_id# ORDER BY gallery_date DESC");
+                if ($ReadGb->getResult()):
+                    ?>
+                    <section class="gallery">
+                        <hgroup>
+                            <h3>
+                                GALERIA:
+                                <p class="tagline">Veja fotos em <mark><?= $post_title; ?></mark></p>
+                            </h3>
+                        </hgroup>
 
-                    <ul>
-                        <?php for ($gb = 9; $gb >= 5; $gb--): ?>
-                            <li>
-                                <div class="img">
-                                    <a href="<?= INCLUDE_PATH; ?>/_tmp/0<?= $gb; ?>.jpg" rel="shadowbox[thispost]" title="">
-                                        <img src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $gb; ?>.jpg" alt="" title="">
-                                    </a>
-                                </div>
-                            </li>
-                        <?php endfor; ?>
-
-                        <?php for ($gb = 6; $gb <= 9; $gb++): ?>
-                            <li>
-                                <div class="img">
-                                    <a href="<?= INCLUDE_PATH; ?>/_tmp/0<?= $gb; ?>.jpg" rel="shadowbox[thispost]" title="">
-                                        <img src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $gb; ?>.jpg" alt="" title="">
-                                    </a>
-                                </div>
-                            </li>
-                        <?php endfor; ?>
-                    </ul>
-                    <div class="clear"></div>
-                </section>
+                        <ul>
+                            <?php
+                            $gb = 0;
+                            foreach ($ReadGb->getResult() as $gallery):
+                                $gb++;
+                                extract((array) $gallery);
+                                ?>
+                                <li>
+                                    <div class="img">
+                                        <a href="<?= HOME ?>/uploads/<?= $gallery_image; ?>" rel="shadowbox[<?= $post_id; ?>]" title="Imagem <?= $gb; ?> do post <?= $post_title; ?>">
+                                            <?= Check::Image('uploads' . DIRECTORY_SEPARATOR . $gallery_image, "Imagem {$gb} do post {$post_title}", 120, 80) ?>
+                                        </a>
+                                    </div>
+                                </li>
+                                <?php
+                            endforeach;
+                            ?>
+                        </ul>
+                        <div class="clear"></div>
+                    </section>
+                <?php endif; ?>
             </div>
 
             <!--RELACIONADOS-->

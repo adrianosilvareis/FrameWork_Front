@@ -106,7 +106,7 @@
                         <ul class="info post_actions">
                             <li><strong>Data:</strong> <?= date('d/m/Y H:i', strtotime($post_date)); ?>Hs</li>
                             <li><a class="act_view" target="_blank" href="../artigo/<?= $post_name; ?>" title="Ver no site">Ver no site</a></li>
-                            <li><a class="act_edit" href="painel.php?exe=posts/update&postid=<?= $post_id; ?>" title="Editar">Editar</a></li>
+                            <li><a class="act_edit" href="painel.php?exe=posts/update&postId=<?= $post_id; ?>" title="Editar">Editar</a></li>
 
                             <?php if (!$post_status): ?>
                                 <li><a class="act_ative" href="painel.php?exe=posts/index&post=<?= $post_id; ?>&action=active" title="Ativar">Ativar</a></li>

@@ -67,12 +67,12 @@ class Seo {
                 endif;
                 break;
 
-            case '404':
-                $this->Data = ['404 Oppss, Nada encontrado!', SITEDESC, HOME . '/404', INCLUDE_PATH . '/images/site.png'];
+            case 'index':
+                $this->Data = [SITENAME . ' - Seu Guia de empresas, eventos e baladas!', SITEDESC, HOME, INCLUDE_PATH . '/images/site.png'];
                 break;
 
             default :
-                $this->Data = [SITENAME . ' - Seu Guia de empresas, eventos e baladas!', SITEDESC, HOME, INCLUDE_PATH . '/images/site.png'];
+                $this->Data = ['404 Oppss, Nada encontrado!', SITEDESC, HOME . '/404', INCLUDE_PATH . '/images/site.png'];
                 break;
 
         endswitch;

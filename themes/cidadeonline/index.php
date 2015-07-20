@@ -1,6 +1,9 @@
 <?php
 $View = new View();
 $tpl_g = $View->Load('article_g');
+$tpl_m = $View->Load('article_m');
+$tpl_p = $View->Load('article_p');
+$tpl_empresa = $View->Load('empresa_p');
 ?>
 <!--HOME SLIDER-->
 <section class="main-slider">
@@ -22,7 +25,7 @@ $tpl_g = $View->Load('article_g');
                     $slide->post_content = Check::Words($slide->post_content, 38);
                     $slide->datetime = date('Y-m-d', strtotime($slide->post_date));
                     $slide->pubdate = date('d/m/Y H:i', strtotime($slide->post_date));
-                    
+
                     $View->Show((array) $slide, $tpl_g);
                 endforeach;
             endif;
@@ -44,34 +47,34 @@ $tpl_g = $View->Load('article_g');
         <section class="main_lastnews">
             <h1 class="line_title"><span class="oliva">Últimas Notícias:</span></h1>
 
-            <article class="one_news">
-                <div class="img">
-                    <!--268x185-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/04.jpg" /> 
-                </div>
-
-                <header>
-                    <h1><a href="<?= HOME ?>/artigo/nome_do_artigo">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                    <p class="tagline">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                </header>
-
-            </article>
+            <?php
+            $post->newDados("cat={$cat}&limit=1&offset=3");
+            if (!$post->getResult()):
+                WSErro('Desculpe, não existe uma noticia destaque para ser exibida. Favor, volte depois', WS_INFOR);
+            else:
+                $new = $post->getResult()[0];
+                $new->post_title = Check::Words($new->post_title, 12);
+                $new->post_content = Check::Words($new->post_content, 38);
+                $new->datetime = date('Y-m-d', strtotime($new->post_date));
+                $new->pubdate = date('d/m/Y H:i', strtotime($new->post_date));
+                $View->Show((array) $new, $tpl_m);
+            endif;
+            ?>
 
             <div class="last_news">
-                <?php for ($ul = 5; $ul <= 8; $ul++): ?>
-                    <article>
-                        <div class="img">
-                            <!--120x80-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $ul; ?>.jpg" />
-                        </div>
-
-                        <header>
-                            <h1><a href="<?= HOME ?>/artigo/nome_do_artigo">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-                <?php endfor; ?>
+                <?php
+                $post->newDados("cat={$cat}&limit=4&offset=4");
+                if (!$post->getResult()):
+                    WSErro("Desculpe, não temos mais noticias para serem exibidas aqui. Favor, volte depois!", WS_INFOR);
+                else:
+                    foreach ($post->getResult() as $news):
+                        $news->post_title = Check::Words($news->post_title, 12);
+                        $news->datetime = date('Y-m-d', strtotime($news->post_date));
+                        $news->pubdate = date('d/m/Y H:i', strtotime($news->post_date));
+                        $View->Show((array) $news, $tpl_p);
+                    endforeach;
+                endif;
+                ?>
             </div>
 
 
@@ -85,59 +88,60 @@ $tpl_g = $View->Load('article_g');
                 </ul>
 
                 <div class="tab comer">
-                    <?php for ($com = 1; $com <= 4; $com++): ?>
-                        <article>
-                            <!--120x60-->
-                            <h1>
-                                Locais para comer: NOME DA EMPRESA
-                                <a href="<?= HOME ?>/empresa/nome_da_empresa" title="UPINSIDE TECNOLOGIA" class="img">
-                                    <img alt="UPINSIDE TECNOLOGIA" title="UPINSIDE TECNOLOGIA" src="<?= INCLUDE_PATH; ?>/_tmp/emp0<?= $com; ?>.png" />
-                                </a>
-                            </h1>
-                        </article>
-                    <?php endfor; ?>
+                    <?php
+                    $empcat = 'onde-comer';
+                    $empresa = new Read('app_empresas');
+                    $empresa->Query("WHERE empresa_status = 1 AND #empresa_categoria# ORDER BY rand() LIMIT 4", "empresa_categoria={$empcat}");
+                    if (!$empresa->getResult()):
+                        WSErro("Desculpe, não existem empresas cadastradas na categoria ONDE COMER. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($empresa->getResult() as $emp):
+                            $View->Show((array) $emp, $tpl_empresa);
+                        endforeach;
+                    endif;
+                    ?>
                 </div>
 
                 <div class="tab ficar none">
-                    <?php for ($com = 4; $com >= 1; $com--): ?>
-                        <article>
-                            <!--120x60-->
-                            <h1>
-                                Locais para dormir: NOME DA EMPRESA
-                                <a href="URL" title="UPINSIDE TECNOLOGIA" class="img">
-                                    <img alt="UPINSIDE TECNOLOGIA" title="UPINSIDE TECNOLOGIA" src="<?= INCLUDE_PATH; ?>/_tmp/emp0<?= $com; ?>.png" />
-                                </a>
-                            </h1>
-                        </article>
-                    <?php endfor; ?>
+                    <?php
+                    $empcat = 'onde-ficar';
+                    $empresa->newDados("empresa_categoria={$empcat}");
+                    if (!$empresa->getResult()):
+                        WSErro("Desculpe, não existem empresas cadastradas na categoria ONDE FICAR. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($empresa->getResult() as $emp):
+                            $View->Show((array) $emp, $tpl_empresa);
+                        endforeach;
+                    endif;
+                    ?>
                 </div>
 
                 <div class="tab comprar none">
-                    <?php for ($com = 1; $com <= 4; $com++): ?>
-                        <article>
-                            <!--120x60-->
-                            <h1>
-                                Locais para comprar: NOME DA EMPRESA
-                                <a href="URL" title="UPINSIDE TECNOLOGIA" class="img">
-                                    <img alt="UPINSIDE TECNOLOGIA" title="UPINSIDE TECNOLOGIA" src="<?= INCLUDE_PATH; ?>/_tmp/emp0<?= $com; ?>.png" />
-                                </a>
-                            </h1>
-                        </article>
-                    <?php endfor; ?>
+                    <?php
+                    $empcat = 'onde-comprar';
+                    $empresa->newDados("empresa_categoria={$empcat}");
+                    if (!$empresa->getResult()):
+                        WSErro("Desculpe, não existem empresas cadastradas na categoria ONDE COMPRAR. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($empresa->getResult() as $emp):
+                            $View->Show((array) $emp, $tpl_empresa);
+                        endforeach;
+                    endif;
+                    ?>
                 </div>
 
                 <div class="tab divertir none">
-                    <?php for ($com = 4; $com >= 1; $com--): ?>
-                        <article>
-                            <!--120x60-->
-                            <h1>
-                                Locais para sair: NOME DA EMPRESA
-                                <a href="URL" title="UPINSIDE TECNOLOGIA" class="img">
-                                    <img alt="UPINSIDE TECNOLOGIA" title="UPINSIDE TECNOLOGIA" src="<?= INCLUDE_PATH; ?>/_tmp/emp0<?= $com; ?>.png" />
-                                </a>
-                            </h1>
-                        </article>
-                    <?php endfor; ?>
+                    <?php
+                    $empcat = 'onde-se-divertir';
+                    $empresa->newDados("empresa_categoria={$empcat}");
+                    if (!$empresa->getResult()):
+                        WSErro("Desculpe, não existem empresas cadastradas na categoria ONDE SE DIVERTIR. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($empresa->getResult() as $emp):
+                            $View->Show((array) $emp, $tpl_empresa);
+                        endforeach;
+                    endif;
+                    ?>
                 </div>                        
             </nav>
         </section><!--  last news -->
@@ -153,19 +157,19 @@ $tpl_g = $View->Load('article_g');
 
             <h1 class="line_title"><span class="vermelho">Destaques:</span></h1>
 
-            <?php for ($ul = 7; $ul >= 5; $ul--): ?>
-                <article>
-                    <div class="img">
-                        <!--120x80-->
-                        <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $ul; ?>.jpg" />
-                    </div>
-
-                    <header>
-                        <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                        <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                    </header>
-                </article>
-            <?php endfor; ?>
+            <?php
+            $post->Query("WHERE post_status = 1 ORDER BY post_views DESC, post_date DESC LIMIT 3", null);
+            if (!$post->getResult()):
+                WSErro("Desculpe, nenhuma noticia em destaque neste momento. Favor volte depois!", WS_INFOR);
+            else:
+                foreach ($post->getResult() as $aposts):
+                    $aposts->post_title = Check::Words($aposts->post_title, 12);
+                    $aposts->datetime = date('Y-m-d', strtotime($aposts->post_date));
+                    $aposts->pubdate = date('d/m/Y H:i', strtotime($aposts->post_date));
+                    $View->Show((array) $aposts, $tpl_p);
+                endforeach;
+            endif;
+            ?>
         </aside>               
 
     </section><!-- destaques -->
@@ -178,33 +182,39 @@ $tpl_g = $View->Load('article_g');
         <section class="eventos">
             <h2 class="line_title"><span class="roxo">Eventos:</span></h2>
 
-            <article class="one_news">
-                <div class="img">
-                    <!--268x185-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/10.jpg" />
-                </div>
-
-                <header>
-                    <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                    <p class="tagline">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                </header>
-            </article>
+            <?php
+            $cat = Check::CatByName('Eventos');
+            if ($cat):
+                $post->newDados("cat={$cat}&limit=1&offset=0");
+                if (!$post->getResult()):
+                    WSErro('Desculpe, não existe uma noticia destaque para ser exibida. Favor, volte depois', WS_INFOR);
+                else:
+                    $new = $post->getResult()[0];
+                    $new->post_title = Check::Words($new->post_title, 9);
+                    $new->post_content = Check::Words($new->post_content, 20);
+                    $new->datetime = date('Y-m-d', strtotime($new->post_date));
+                    $new->pubdate = date('d/m/Y H:i', strtotime($new->post_date));
+                    $View->Show((array) $new, $tpl_m);
+                endif;
+            endif;
+            ?>
 
             <div class="last_news">
-                <?php for ($sl = 6; $sl >= 5; $sl--): ?>
-                    <article>
-                        <div class="img slide_img">
-                            <!--120x80-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $sl; ?>.jpg" />
-                        </div>
-
-                        <header>
-                            <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-                <?php endfor; ?>
+                <?php
+                if ($cat):
+                    $post->newDados("cat={$cat}&limit=3&offset=1");
+                    if (!$post->getResult()):
+                        WSErro("Desculpe, não temos mais noticias para serem exibidas aqui. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($post->getResult() as $news):
+                            $news->post_title = Check::Words($news->post_title, 12);
+                            $news->datetime = date('Y-m-d', strtotime($news->post_date));
+                            $news->pubdate = date('d/m/Y H:i', strtotime($news->post_date));
+                            $View->Show((array) $news, $tpl_p);
+                        endforeach;
+                    endif;
+                endif;
+                ?>
             </div>
         </section>
 
@@ -212,33 +222,39 @@ $tpl_g = $View->Load('article_g');
         <section class="esportes">
             <h2 class="line_title"><span class="verde">Esportes:</span></h2>
 
-            <article class="one_news">
-                <div class="img slide_img">
-                    <!--268x185-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/11.jpg" />
-                </div>
-
-                <header>
-                    <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                    <p class="tagline">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                </header>
-            </article>
+            <?php
+            $cat = Check::CatByName('Esportes');
+            if ($cat):
+                $post->newDados("cat={$cat}&limit=1&offset=0");
+                if (!$post->getResult()):
+                    WSErro('Desculpe, não existe uma noticia destaque para ser exibida. Favor, volte depois', WS_INFOR);
+                else:
+                    $new = $post->getResult()[0];
+                    $new->post_title = Check::Words($new->post_title, 9);
+                    $new->post_content = Check::Words($new->post_content, 20);
+                    $new->datetime = date('Y-m-d', strtotime($new->post_date));
+                    $new->pubdate = date('d/m/Y H:i', strtotime($new->post_date));
+                    $View->Show((array) $new, $tpl_m);
+                endif;
+            endif;
+            ?>
 
             <div class="last_news">
-                <?php for ($sl = 8; $sl <= 9; $sl++): ?>
-                    <article>
-                        <div class="img slide_img">
-                            <!--120x80-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $sl; ?>.jpg" />
-                        </div>
-
-                        <header>
-                            <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-                <?php endfor; ?>
+                <?php
+                if ($cat):
+                    $post->newDados("cat={$cat}&limit=3&offset=1");
+                    if (!$post->getResult()):
+                        WSErro("Desculpe, não temos mais noticias para serem exibidas aqui. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($post->getResult() as $news):
+                            $news->post_title = Check::Words($news->post_title, 12);
+                            $news->datetime = date('Y-m-d', strtotime($news->post_date));
+                            $news->pubdate = date('d/m/Y H:i', strtotime($news->post_date));
+                            $View->Show((array) $news, $tpl_p);
+                        endforeach;
+                    endif;
+                endif;
+                ?>
             </div>
         </section>
 
@@ -246,33 +262,39 @@ $tpl_g = $View->Load('article_g');
         <section class="baladas">
             <h2 class="line_title"><span class="azul">Baladas:</span></h2>
 
-            <article class="one_news">
-                <div class="img slide_img">
-                    <!--268x185-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/12.jpg" />
-                </div>
-
-                <header>
-                    <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                    <p class="tagline">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                </header>
-            </article>
+            <?php
+            $cat = Check::CatByName('Baladas');
+            if ($cat):
+                $post->newDados("cat={$cat}&limit=1&offset=0");
+                if (!$post->getResult()):
+                    WSErro('Desculpe, não existe uma noticia destaque para ser exibida. Favor, volte depois', WS_INFOR);
+                else:
+                    $new = $post->getResult()[0];
+                    $new->post_title = Check::Words($new->post_title, 9);
+                    $new->post_content = Check::Words($new->post_content, 20);
+                    $new->datetime = date('Y-m-d', strtotime($new->post_date));
+                    $new->pubdate = date('d/m/Y H:i', strtotime($new->post_date));
+                    $View->Show((array) $new, $tpl_m);
+                endif;
+            endif;
+            ?>
 
             <div class="last_news">
-                <?php for ($sl = 5; $sl <= 6; $sl++): ?>
-                    <article>
-                        <div class="img slide_img">
-                            <!--120x80-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $sl; ?>.jpg" />
-                        </div>
-
-                        <header>
-                            <h1><a href="#"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-                <?php endfor; ?>
+                <?php
+                if ($cat):
+                    $post->newDados("cat={$cat}&limit=3&offset=1");
+                    if (!$post->getResult()):
+                        WSErro("Desculpe, não temos mais noticias para serem exibidas aqui. Favor, volte depois!", WS_INFOR);
+                    else:
+                        foreach ($post->getResult() as $news):
+                            $news->post_title = Check::Words($news->post_title, 12);
+                            $news->datetime = date('Y-m-d', strtotime($news->post_date));
+                            $news->pubdate = date('d/m/Y H:i', strtotime($news->post_date));
+                            $View->Show((array) $news, $tpl_p);
+                        endforeach;
+                    endif;
+                endif;
+                ?>
             </div>
         </section>
 
