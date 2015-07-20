@@ -79,7 +79,7 @@
                 <?php
             endforeach;
         else:
-            $Pager->BackPage();
+            $Pager->ReturnPage();
             WSErro("Desculpa, ainda não temos posts cadastrados", WS_INFOR);
         endif;
         ?>

@@ -7,10 +7,11 @@ class Read extends Controle {
     function __construct($Table = null) {
         $this->Table = $Table;
     }
-    
-    public function setTable($Table){
+
+    public function setTable($Table) {
         $this->Table = (string) $Table;
     }
+
     /**
      * <b>
      * #### OBS IMPORTANTE ####
@@ -32,7 +33,7 @@ class Read extends Controle {
         $this->Termos = $Termos;
         return $this->newDados($Dados);
     }
-    
+
     public function FullRead($Dados, $Sql) {
         return $this->newDados($Dados, $Sql);
     }
@@ -47,7 +48,6 @@ class Read extends Controle {
         if (!is_array($Dados)):
             parse_str($Dados, $Dados);
         endif;
-
         $this->Dados = $Dados;
         if ($Dados != null):
             $this->getTermos();

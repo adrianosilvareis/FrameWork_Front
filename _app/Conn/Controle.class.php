@@ -27,13 +27,13 @@ abstract class Controle extends Business {
      * array atribuitivo com todos os dados a ser atualizados, 
      * @param array $Dados
      */
-    public function update(array $Dados,$Termos = null) {
+    public function update(array $Dados, $Termos = null) {
         $this->Dados = $Dados;
         $Syntax = $this->getSyntax();
         if (!empty($Termos)):
             $Syntax['Id'] = $Termos;
         endif;
-        
+
         $sql = "UPDATE {$this->Table} SET {$Syntax['Seter']} WHERE {$Syntax['Id']}";
         return $this->execute($sql);
     }
@@ -64,11 +64,11 @@ abstract class Controle extends Business {
         $Keys = array_keys($this->Dados);
         $Fields = implode(', ', $Keys);
         $Places = ':' . implode(', :', $Keys);
-        
+
         foreach ($Keys as $values):
             $Seter[] = "{$values} = :{$values}";
         endforeach;
-        
+
         $Id = $Seter[count($Seter) - 1];
         if (count($Seter) > 1):
             unset($Seter[count($Seter) - 1]);
@@ -86,18 +86,27 @@ abstract class Controle extends Business {
      */
     protected function execute($sql) {
         $this->Stmt = $this->prepare($sql);
-
+        $param = null;
         if (array_key_exists('limit', $this->Dados)) {
             $Limit = (int) $this->Dados['limit'];
             $this->Stmt->bindParam(':limit', $Limit, PDO::PARAM_INT);
             unset($this->Dados['limit']);
+            $param = true;
         }
         if (array_key_exists('offset', $this->Dados)) {
             $Offset = (int) $this->Dados['offset'];
             $this->Stmt->bindParam(':offset', $Offset, PDO::PARAM_INT);
             unset($this->Dados['offset']);
+            $param = true;
         }
-       
+
+        if ($param):
+            foreach ($this->Dados as $dado => $value):
+                $this->Stmt->bindParam(":{$dado}", $value);
+            endforeach;
+            $this->Dados = null;
+        endif;
+
         return $this->commit();
     }
 
@@ -108,7 +117,7 @@ abstract class Controle extends Business {
      */
     protected function commit() {
         try {
-            (!empty($this->Dados) ? $this->Stmt->execute($this->Dados) : $this->Stmt->execute());
+            ($this->Dados ? $this->Stmt->execute($this->Dados) : $this->Stmt->execute());
             $this->Result = $this->getRowCount();
         } catch (PDOException $ex) {
             PHPErro($ex->getCode(), $ex->getMessage(), $ex->getFile(), $ex->getLine());
@@ -116,5 +125,5 @@ abstract class Controle extends Business {
         }
         return $this->Result;
     }
-    
+
 }

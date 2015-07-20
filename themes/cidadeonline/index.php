@@ -1,23 +1,32 @@
+<?php
+$View = new View();
+$tpl_g = $View->Load('article_g');
+?>
 <!--HOME SLIDER-->
 <section class="main-slider">
     <h3>Últimas Atualizações:</h3>
     <div class="container">
 
         <div class="slidecount">
-            <?php for ($sl = 1; $sl <= 3; $sl++): ?>
-                <article>
-                    <div class="img slide_img">
-                        <!--460x230-->
-                        <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $sl; ?>.jpg" />                                
-                    </div>
+            <?php
+            $cat = Check::CatByName('titulo');
+            $post = new Read;
+            $post->setTable('ws_posts');
+            $post->Query("WHERE post_status = 1 AND (post_cat_parent = :cat OR post_category = :cat) ORDER BY post_date DESC LIMIT :limit OFFSET :offset", "cat={$cat}&limit=3&offset=0");
 
-                    <header>
-                        <h1><a href="<?= HOME ?>/artigo/nome_do_artigo"><?= $sl; ?> Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                        <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        <p class="tagline">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    </header>
-                </article>
-            <?php endfor; ?>                
+            if (!$post->getResult()):
+                WSErro('Desculpe, ainda não existem notícias cadastradas. Favor volte mais tarde!', WS_INFOR);
+            else:
+                foreach ($post->getResult() as $slide):
+                    $slide->post_title = Check::Words($slide->post_title, 12);
+                    $slide->post_content = Check::Words($slide->post_content, 38);
+                    $slide->datetime = date('Y-m-d', strtotime($slide->post_date));
+                    $slide->pubdate = date('d/m/Y H:i', strtotime($slide->post_date));
+                    
+                    $View->Show((array) $slide, $tpl_g);
+                endforeach;
+            endif;
+            ?>                
         </div>
 
         <div class="slidenav"></div>   

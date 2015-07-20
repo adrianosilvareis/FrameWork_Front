@@ -69,13 +69,12 @@ class Login {
 
     private function getUser() {
         $this->Senha = md5($this->Senha);
-
         $WsUsers = new WsUsers();
         $WsUsers->setUser_email($this->Email);
         $WsUsers->setUser_password($this->Senha);
-        $result = $WsUsers->Query("WHERE #user_email# AND #user_password#");
-        if ($result):
-            $this->Result = $result[0];
+        $WsUsers->Query("WHERE #user_email# AND #user_password#");
+        if ($WsUsers->getResult()):
+            $this->Result = $WsUsers->getResult()[0];
             return true;
         else:
             return false;

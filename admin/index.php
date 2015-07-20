@@ -21,7 +21,7 @@ require('../_app/Config.inc.php');
 
                 <?php
                 $login = new Login(3);
-
+                
                 if ($login->CheckLogin()):
                     header('Location: painel.php');
                 endif;

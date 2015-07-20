@@ -55,7 +55,9 @@ class View {
 
     private function setKeys($Data) {
         $this->Data = $Data;
+        $this->Data['HOME'] = HOME;
         $this->Keys = explode('&', '#' . implode('#&#', array_keys($this->Data)) . '#');
+        $this->Keys[] = '#HOME#';
     }
 
     private function setValues() {
