@@ -67,36 +67,32 @@ endif;
             </div>
 
             <!--RELACIONADOS-->
-            <footer>
-                <nav>
-                    <h3>Veja também:</h3>
-                    <article>
-                        <div class="img">
-                            <!--268x165-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/12.jpg" />
-                        </div>
+            <?php
+            $readMode = new Read;
+            $readMode->setTable("ws_posts");
+            $readMode->Query("WHERE post_status = 1 AND post_id != :post_id AND #post_category# ORDER BY rand() LIMIT 2", "post_id={$post_id}&post_category={$post_category}");
 
-                        <header>
-                            <h1><a href="<?= HOME ?>/artigo/nome_do_artigo">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-
-                    <article>
-                        <div class="img">
-                            <!--120x80-->
-                            <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/10.jpg" />
-                        </div>
-
-                        <header>
-                            <h1><a href="<?= HOME ?>/artigo/nome_do_artigo">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                            <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                        </header>
-                    </article>
-                </nav>
-                <div class="clear"></div>
-            </footer>
-
+            if ($readMode->getResult()):
+                $View = new View;
+                $tpl_m = $View->Load('article_m');
+                ?>
+                <footer>
+                    <nav>
+                        <h3>Veja também:</h3>
+                        <?php
+                        foreach ($readMode->getResult() as $more):
+                            $more->datetime = date('Y-m-d', strtotime($more->post_date));
+                            $more->pubdate = date('d/m/Y H:i', strtotime($more->post_date));
+                            $more->post_content = Check::Words($more->post_content, 20);
+                            $View->Show((array) $more, $tpl_m);
+                        endforeach;
+                        ?>
+                    </nav>
+                    <div class="clear"></div>
+                </footer>
+                <?php
+            endif;
+            ?>
 
             <!--Comentários aqui-->
 

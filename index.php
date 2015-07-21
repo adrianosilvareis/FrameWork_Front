@@ -32,7 +32,7 @@ require_once './_app/Config.inc.php';
 
         <?php
         require(REQUIRE_PATH . '/inc/header.inc.php');
-
+        
         if(!require($Link->getPatch())):
             WSErro('Erro ao incluir arquivo de navegação!', WS_ERROR, true);
         endif;

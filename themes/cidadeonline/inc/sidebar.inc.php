@@ -1,3 +1,7 @@
+<?php
+$side = new Read;
+$tpl_p = $View->Load('article_p');
+?>
 <aside class="main-sidebar">
     <article class="ads">
         <header>
@@ -10,35 +14,31 @@
 
     <section class="widget art-list last-publish">
         <h2 class="line_title"><span class="oliva">Últimas Atualizações:</span></h2>
-        <?php for ($ul = 5; $ul <= 7; $ul++): ?>
-            <article>
-                <div class="img">
-                    <!--120x80-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $ul; ?>.jpg" />
-                </div>
-
-                <header>
-                    <h1><a href="#">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                </header>
-            </article>
-        <?php endfor; ?>
+        <?php
+        $side->setTable('ws_posts');
+        $side->Query("WHERE post_status = 1 AND post_id != :side ORDER BY post_date DESC LIMIT 3", "side={$post_id}");
+        if ($side->getResult()):
+            foreach ($side->getResult() as $last):
+                $last->datetime = date('Y-m-d', strtotime($last->post_date));
+                $last->pubdate = date('d/m/Y H:i', strtotime($last->post_date));
+                $View->Show((array) $last, $tpl_p);
+            endforeach;
+        endif;
+        ?>
     </section>
 
     <section class="widget art-list most-view">
         <h2 class="line_title"><span class="vermelho">Destaques:</span></h2>
-        <?php for ($ul = 9; $ul >= 7; $ul--): ?>
-            <article>
-                <div class="img">
-                    <!--120x80-->
-                    <img alt="" title="" src="<?= INCLUDE_PATH; ?>/_tmp/0<?= $ul; ?>.jpg" />
-                </div>
-
-                <header>
-                    <h1><a href="#">Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit.</a></h1>
-                    <time datetime="2013-11-11" pubdate><?= date('d/m/Y H:i'); ?>Hs</time>
-                </header>
-            </article>
-        <?php endfor; ?>
+        <?php
+        $side->setTable('ws_posts');
+        $side->Query("WHERE post_status = 1 AND post_id != :side ORDER BY post_views DESC LIMIT 3", "side={$post_id}");
+        if ($side->getResult()):
+            foreach ($side->getResult() as $most):
+                $most->datetime = date('Y-m-d', strtotime($most->post_date));
+                $most->pubdate = date('d/m/Y H:i', strtotime($most->post_date));
+                $View->Show((array) $most, $tpl_p);
+            endforeach;
+        endif;
+        ?>
     </section>
 </aside>

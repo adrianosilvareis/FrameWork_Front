@@ -21,7 +21,7 @@
             //MÉDIA DE PAGEVIEWS
             $read->FullRead(null, "SELECT SUM(siteviews_pages) AS pages FROM ws_siteviews");
             $ResPages = $read->getResult()[0]->pages;
-            $Pages = substr($ResPages / $Users, 0, 5);
+            $Pages = substr($ResPages / ($Users == 0 ? 1 : $Users), 0, 5);
 
             //POSTS
             $read->setTable("ws_posts");

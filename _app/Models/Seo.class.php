@@ -62,7 +62,7 @@ class Seo {
                     //post:: post_views
                     $ReadSeo->setPost_id($post_id);
                     $ReadSeo->setPost_views($post_views + 1);
-                    $ReadSeo->setPost_last_views(date("Y-m-d H:i:s"));
+                    $ReadSeo->setPost_last_views(date('Y-m-d H:i:s'));
                     $ReadSeo->update();
                 endif;
                 break;

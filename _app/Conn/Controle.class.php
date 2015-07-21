@@ -99,14 +99,11 @@ abstract class Controle extends Business {
             unset($this->Dados['offset']);
             $param = true;
         }
-
-        if ($param):
-            foreach ($this->Dados as $dado => $value):
-                $this->Stmt->bindParam(":{$dado}", $value);
-            endforeach;
-            $this->Dados = null;
-        endif;
-
+        
+        foreach ($this->Dados as $dado => $value):
+            $this->Stmt->bindParam(":{$dado}", $value);
+        endforeach;
+        $this->Dados = null;
         return $this->commit();
     }
 
@@ -117,7 +114,7 @@ abstract class Controle extends Business {
      */
     protected function commit() {
         try {
-            ($this->Dados ? $this->Stmt->execute($this->Dados) : $this->Stmt->execute());
+            $this->Stmt->execute();
             $this->Result = $this->getRowCount();
         } catch (PDOException $ex) {
             PHPErro($ex->getCode(), $ex->getMessage(), $ex->getFile(), $ex->getLine());

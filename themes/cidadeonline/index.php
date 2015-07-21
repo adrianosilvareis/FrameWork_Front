@@ -12,7 +12,7 @@ $tpl_empresa = $View->Load('empresa_p');
 
         <div class="slidecount">
             <?php
-            $cat = Check::CatByName('titulo');
+            $cat = Check::CatByName('noticias');
             $post = new Read;
             $post->setTable('ws_posts');
             $post->Query("WHERE post_status = 1 AND (post_cat_parent = :cat OR post_category = :cat) ORDER BY post_date DESC LIMIT :limit OFFSET :offset", "cat={$cat}&limit=3&offset=0");
@@ -146,7 +146,6 @@ $tpl_empresa = $View->Load('empresa_p');
             </nav>
         </section><!--  last news -->
 
-
         <aside>
             <div class="aside-banner">
                 <!--300x250-->
@@ -185,7 +184,7 @@ $tpl_empresa = $View->Load('empresa_p');
             <?php
             $cat = Check::CatByName('Eventos');
             if ($cat):
-                $post->newDados("cat={$cat}&limit=1&offset=0");
+                $post->Query("WHERE post_status = 1 AND post_category = :cat ORDER BY post_views DESC, post_date DESC LIMIT :limit OFFSET :offset", "cat={$cat}&limit=3&offset=0");
                 if (!$post->getResult()):
                     WSErro('Desculpe, não existe uma noticia destaque para ser exibida. Favor, volte depois', WS_INFOR);
                 else:
